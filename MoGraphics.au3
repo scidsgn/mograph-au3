@@ -1,8 +1,8 @@
 #include-once
 
 #include <GDIPlus.au3>
-#include "LinkedList.au3"
-#include "AutoItObject.au3"
+#include "helper\LinkedList.au3"
+#include "helper\AutoItObject.au3"
 
 ; #INDEX# =======================================================================================================================
 ; Title .........: Motion Graphics UDF
