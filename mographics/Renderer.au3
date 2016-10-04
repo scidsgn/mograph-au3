@@ -9,6 +9,9 @@ Func _MoGraph_RendererCreate($oScene, $oRenderSettings, $fnRenderingFunction, $i
 	_AutoItObject_AddProperty($oRenderer, "time", $ELSCOPE_PUBLIC, $iStartTime)
 	_AutoItObject_AddProperty($oRenderer, "settings", $ELSCOPE_PUBLIC, $oRenderSettings)
 
+	_AutoItObject_AddProperty($oRenderer, "timer", $ELSCOPE_PUBLIC, 0)
+	_AutoItObject_AddProperty($oRenderer, "fps", $ELSCOPE_PUBLIC, 0)
+
 	_AutoItObject_AddProperty($oRenderer, "events", $ELSCOPE_PUBLIC, LinkedList())
 
 	_AutoItObject_AddProperty($oRenderer, "renderFunc", $ELSCOPE_PUBLIC, (IsFunc($fnRenderingFunction) ? FuncName($fnRenderingFunction) : $fnRenderingFunction))
@@ -16,6 +19,14 @@ Func _MoGraph_RendererCreate($oScene, $oRenderSettings, $fnRenderingFunction, $i
 	_AutoItObject_AddMethod($oRenderer, "render", "__MoGraph_RendererRenderFunc")
 
 	Return $oRenderer
+EndFunc
+
+Func _MoGraph_RendererGetFps($oRenderer)
+	Return $oRenderer.fps
+EndFunc
+
+Func _MoGraph_RendererSetFps($oRenderer, $fFps)
+	$oRenderer.fps = $fFps
 EndFunc
 
 Func _MoGraph_RendererGetTime($oRenderer)
@@ -32,7 +43,16 @@ EndFunc
 
 Func _MoGraph_RendererRenderFrameNext($oRenderer)
 	Local $vReturn = $oRenderer.render()
-	$oRenderer.time += 1
+	If $oRenderer.fps <> 0 Then
+		If $oRenderer.timer = 0 Then
+			$oRenderer.timer = TimerInit()
+		Else
+			$oRenderer.time += (TimerDiff($oRenderer.timer)*$oRenderer.fps)/1000
+			$oRenderer.timer = TimerInit()
+		EndIf
+	Else
+		$oRenderer.time += 1
+	EndIf
 
 	Return $vReturn
 EndFunc
